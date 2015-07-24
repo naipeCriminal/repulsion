@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	body{
+		padding: 0px;
+		margin: 0px;
+		background: #ccf;
+		overflow: hidden;
+
+	}
+
+	</style>
+</head>
+<body>
+	<div id="container" style="background:#fff;height: 500px;width:1000px;">
+		<canvas id="canvas">	
+		</canvas>	
+	</div>	
+	<script>
+	var mouseX = mouseY = 0;
+	 var container=document.getElementById("container")
+	 var wcontainer,hcontainer;
+	 var canvas= document.getElementById("canvas")
+	 var context=canvas.getContext("2d");
+	 var particulas=[];
+	 var vertices=[];
+	 var PI2=Math.PI*2;
+	 var cuadradosX=3;
+	 var cuadradosY=;
+	 var range = 90;
+	var speed = 90;
+	var stroke_megane = 1;
+
+	 function init()
+	{
+		wcontainer=container.offsetWidth;
+		hcontainer=container.offsetHeight;
+		canvas.width=wcontainer;
+		canvas.height=hcontainer;
+		// alert(wcontainer+","+ hcontainer)
+		cuadricula();
+	    window.addEventListener("mousemove", windowOnMouseMove, false);
+	    window.addEventListener("resize", onWindowResize, false);
+
+	}	
+	function cuadricula(){
+		var ancho=wcontainer/cuadradosX;
+		var alto=hcontainer/cuadradosY
+		for (var i = 0; i <= cuadradosX; i++) {
+			x=i*ancho;
+			for (var j = 0; j <=cuadradosY ; j++) {
+				y=j*alto;
+				particulas.push({x:x,y:y,x0:x,y0:y})
+			};
+		};
+		// for (var i = 0; i < particulas.length; i++) {
+		// 	var p=particulas[i]
+		// 	context.beginPath()
+		// 	context.arc(p.x,p.y,2,0, PI2)
+		// 	context.fillStyle="#000000";
+		// 	context.fill();
+		// 	context.closePath();
+		// };
+		// console.log(particulas);
+		calcularvertices();
+	
+	}
+	function calcularvertices(){
+		
+
+
+
+		// var totalcuadros=cuadradosX*cuadradosY
+		// var fila=0;
+		// for (var i = 0; i < totalcuadros; i++) {
+		// 	var verticeY=fila*(cuadradosX+1);
+		// 	console.log(verticeY);
+		// 	if (fila==0)
+		// 		{
+		// 			var verticesCuadro=[i,i+1,i+cuadradosX+1,2+i+cuadradosX,'#'+Math.floor(Math.random()*16777215).toString(16)];
+		// 		}
+		// 		else
+		// 		{
+		// 			// var verticesCuadro=[i,verticeY+1,i+cuadradosX+1,2+verticeY+cuadradosX,'#'+Math.floor(Math.random()*16777215).toString(16)];
+
+		// 		}
+		// 		console.log(verticeY)
+		// 	if((i+1)%cuadradosX==0)fila++
+		// 	vertices.push(verticesCuadro)
+		// };
+		// console.log(vertices)
+	}
+
+	function animate(){
+		// requestAnimationFrame(animate);
+		render()
+	}
+function render() {	
+	// console.log(particulas);
+    var time = new Date().getTime() * 0.000006;
+    context.beginPath();
+    context.clearRect(0, 0, wcontainer, hcontainer);
+    context.closePath();
+
+    for (var i = 0; i < particulas.length; i++) {
+        var p = particulas[i];
+        var dx = mouseX - p.x;
+        var dy = mouseY - p.y;
+        distance = Math.sqrt(dx * dx + dy * dy);
+        p.x = ((p.x - (dx / distance) * (range / distance) * speed) - ((p.x - p.x0)) / 3) + (Math.sin(time * i));
+        p.y = ((p.y - (dy / distance) * (range / distance) * speed) - ((p.y - p.y0)) / 3) + (Math.cos(time * i));
+        var o = p.x - mouseX;
+        var m = p.y - mouseY;
+        var q = Math.sqrt(Math.pow(o, 2) + Math.pow(m, 2));
+        for (var j = 1; j < particulas.length; j++) {
+            var p2 = particulas[j];
+            var k = p.x - p2.x;
+            var h = p.y - p2.y;
+            var a = Math.sqrt(Math.pow(h, 2) + Math.pow(k, 2));
+            if (a < stroke_megane) {
+                context.beginPath();
+                context.arc(p.x, p.y, 1, 0, PI2);
+                context.fillStyle = "#000";
+                context.fill();
+                context.closePath();
+            }
+        }
+
+    }
+    for (var i = 0; i < vertices.length; i++) {
+    	var v= vertices[i];
+    	context.beginPath();
+    	context.moveTo(particulas[vertices[i][0]].x,particulas[vertices[i][0]].y);
+    	context.lineTo(particulas[vertices[i][1]].x,particulas[vertices[i][1]].y)
+    	context.lineTo(particulas[vertices[i][2]].x,particulas[vertices[i][2]].y)
+    	context.lineTo(particulas[vertices[i][3]].x,particulas[vertices[i][3]].y)
+		context.fillStyle=vertices[i][4]
+		context.fill();
+		context.closePath();
+    };
+}
+
+function windowOnMouseMove(event) {
+    mouseX = event.pageX;
+    mouseY = event.pageY;
+}
+function onWindowResize() {
+		wcontainer=container.offsetWidth;
+		hcontainer=container.offsetHeight;
+		canvas.width=wcontainer;
+		canvas.height=hcontainer;
+}
+	init();
+	animate();
+
+	</script>
+</body>
+</html>
